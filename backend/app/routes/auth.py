@@ -1,14 +1,18 @@
 from fastapi import HTTPException
 from strawberry.types import Info
-from app.database import get_db, SessionLocal
 from app.models.user import User
 from app.schema.types import RegisterInput, LoginInput, UserType, AuthResponse
-from app.utils.auth import hash_password, verify_password, create_access_token, get_current_user
+from app.utils.auth import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    get_current_user,
+)
 
 
 async def register(info: Info, input: RegisterInput) -> AuthResponse:
     """Register a new user and return token + user info"""
-    db = next(info.context["db"])  # Get DB session from context
+    db = info.context["db"]  # ✅ directly use session
 
     # Check if email already exists
     if db.query(User).filter(User.email == input.email).first():
@@ -18,7 +22,7 @@ async def register(info: Info, input: RegisterInput) -> AuthResponse:
     user = User(
         email=input.email,
         username=input.username,
-        hashed_password=hash_password(input.password)
+        hashed_password=hash_password(input.password),
     )
     db.add(user)
     db.commit()
@@ -33,14 +37,14 @@ async def register(info: Info, input: RegisterInput) -> AuthResponse:
             id=user.id,
             email=user.email,
             username=user.username,
-            credits=user.credits
-        )
+            credits=user.credits,
+        ),
     )
 
 
 async def login(info: Info, input: LoginInput) -> AuthResponse:
     """Authenticate a user and return token + user info"""
-    db = next(info.context["db"])
+    db = info.context["db"]  # ✅ directly use session
     user = db.query(User).filter(User.email == input.email).first()
 
     if not user or not verify_password(input.password, user.hashed_password):
@@ -54,19 +58,19 @@ async def login(info: Info, input: LoginInput) -> AuthResponse:
             id=user.id,
             email=user.email,
             username=user.username,
-            credits=user.credits
-        )
+            credits=user.credits,
+        ),
     )
 
 
 async def me(info: Info, token: str) -> UserType:
     """Get current user from token"""
-    db = next(info.context["db"])
+    db = info.context["db"]  # ✅ directly use session
     user = get_current_user(token, db)
 
     return UserType(
         id=user.id,
         email=user.email,
         username=user.username,
-        credits=user.credits
+        credits=user.credits,
     )
