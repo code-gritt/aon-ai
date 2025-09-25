@@ -14,7 +14,7 @@ load_dotenv()
 # ----------------------
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql://neondb_owner:npg_IL7gfrHAtQ9k@ep-dry-glade-adliqabi-pooler.c-2.us-east-1.aws.neon.tech/aon-ai-database?sslmode=require&channel_binding=require",
+    "postgresql+psycopg://neondb_owner:npg_IL7gfrHAtQ9k@ep-dry-glade-adliqabi-pooler.c-2.us-east-1.aws.neon.tech/aon-ai-database?sslmode=require",
 )
 
 # ----------------------
@@ -22,8 +22,8 @@ DATABASE_URL = os.getenv(
 # ----------------------
 engine = create_engine(
     DATABASE_URL,
-    echo=False,   # Set True for SQL debug logs
-    future=True,  # SQLAlchemy 2.0 style
+    echo=False,   # Enable for SQL debug logs
+    future=True,  # Use SQLAlchemy 2.0 style
 )
 
 SessionLocal = sessionmaker(
