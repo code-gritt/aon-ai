@@ -2,9 +2,9 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
 import strawberry
+from strawberry.types import Info
 from app.database import get_db
 from app.routes.auth import register, login, me
-# adjust path if needed
 from app.schema.types import UserType, AuthResponse, RegisterInput, LoginInput
 
 app = FastAPI(title="Aon AI Backend")
@@ -31,24 +31,23 @@ app.add_middleware(
 @strawberry.type
 class Query:
     @strawberry.field
-    def me(self, info) -> UserType:
+    async def me(self, info: Info, token: str) -> UserType:
         """Resolver for current logged-in user"""
-        db = info.context["db"]
-        token = info.context.get("token")
-        return me(token, db)
+        db = next(info.context["db"])
+        return await me(info, token)
 
 
 @strawberry.type
 class Mutation:
     @strawberry.field
-    def register(self, input: RegisterInput) -> AuthResponse:
+    async def register(self, info: Info, input: RegisterInput) -> AuthResponse:
         """Resolver for user registration"""
-        return register(input)
+        return await register(info, input)
 
     @strawberry.field
-    def login(self, input: LoginInput) -> AuthResponse:
+    async def login(self, info: Info, input: LoginInput) -> AuthResponse:
         """Resolver for user login"""
-        return login(input)
+        return await login(info, input)
 
 
 schema = strawberry.Schema(query=Query, mutation=Mutation)

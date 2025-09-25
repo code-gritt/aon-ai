@@ -2,13 +2,14 @@ from fastapi import HTTPException
 from strawberry.types import Info
 from app.database import get_db, SessionLocal
 from app.models.user import User
-from app.schema.types import RegisterInput, LoginInput, UserType, AuthResponse  # fixed import
+from app.schema.types import RegisterInput, LoginInput, UserType, AuthResponse
 from app.utils.auth import hash_password, verify_password, create_access_token, get_current_user
 
 
-async def register(input: RegisterInput, info: Info) -> AuthResponse:
+async def register(info: Info, input: RegisterInput) -> AuthResponse:
     """Register a new user and return token + user info"""
-    db = next(info.context["db"])  # get the DB session from context
+    db = next(info.context["db"])  # Get DB session from context
+
     # Check if email already exists
     if db.query(User).filter(User.email == input.email).first():
         raise HTTPException(status_code=400, detail="Email already registered")
@@ -37,10 +38,11 @@ async def register(input: RegisterInput, info: Info) -> AuthResponse:
     )
 
 
-async def login(input: LoginInput, info: Info) -> AuthResponse:
+async def login(info: Info, input: LoginInput) -> AuthResponse:
     """Authenticate a user and return token + user info"""
     db = next(info.context["db"])
     user = db.query(User).filter(User.email == input.email).first()
+
     if not user or not verify_password(input.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
@@ -57,10 +59,11 @@ async def login(input: LoginInput, info: Info) -> AuthResponse:
     )
 
 
-async def me(token: str, info: Info) -> UserType:
+async def me(info: Info, token: str) -> UserType:
     """Get current user from token"""
     db = next(info.context["db"])
     user = get_current_user(token, db)
+
     return UserType(
         id=user.id,
         email=user.email,
