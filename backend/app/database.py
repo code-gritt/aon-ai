@@ -10,11 +10,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # ----------------------
-# Database URL
+# Database URL (use psycopg2)
 # ----------------------
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql+psycopg://neondb_owner:npg_IL7gfrHAtQ9k@ep-dry-glade-adliqabi-pooler.c-2.us-east-1.aws.neon.tech/aon-ai-database?sslmode=require",
+    "postgresql+psycopg2://neondb_owner:npg_IL7gfrHAtQ9k@ep-dry-glade-adliqabi-pooler.c-2.us-east-1.aws.neon.tech/aon-ai-database?sslmode=require",
 )
 
 # ----------------------
@@ -22,7 +22,7 @@ DATABASE_URL = os.getenv(
 # ----------------------
 engine = create_engine(
     DATABASE_URL,
-    echo=False,   # Enable for SQL debug logs
+    echo=False,   # Enable for SQL debug logs if needed
     future=True,  # Use SQLAlchemy 2.0 style
 )
 
@@ -43,7 +43,7 @@ Base = declarative_base()
 
 
 def get_db():
-    """Provide a database session."""
+    """Provide a database session for dependency injection."""
     db = SessionLocal()
     try:
         yield db
