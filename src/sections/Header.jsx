@@ -38,18 +38,46 @@ const Header = () => {
     <header
       className={clsx(
         "fixed top-0 left-0 z-50 w-full py-10 transition-all duration-500",
-        hasScrolled && "py-2 bg-black-100" + " backdrop-blur-[8px]",
+        hasScrolled && "py-2 bg-black-100" + " backdrop-blur-[8px]"
       )}
     >
       <div className="container flex h-14 items-center max-lg:px-5">
         <a className="lg:hidden flex-1 cursor-pointer z-2">
-          <img src="/images/xora.svg" width={115} height={115} alt="logo" />
+          <svg
+            width="160"
+            height="55"
+            viewBox="0 0 160 55"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {/* Circle element for logo icon */}
+            <circle cx="27" cy="27" r="20" fill="#0F3460" />
+            <circle cx="27" cy="27" r="14" fill="#1A1A2E" />
+
+            {/* Stylized "A" inside circle */}
+            <path
+              d="M20 34 L27 18 L34 34 H30 L27 27 L24 34 H20 Z"
+              fill="#EAEDFF"
+            />
+
+            {/* Text "Aon AI" next to logo */}
+            <text
+              x="60"
+              y="34"
+              fontFamily="Helvetica, Arial, sans-serif"
+              fontWeight="700"
+              fontSize="28"
+              fill="#EAEDFF"
+            >
+              Aon AI
+            </text>
+          </svg>
         </a>
 
         <div
           className={clsx(
             "w-full max-lg:fixed max-lg:top-0 max-lg:left-0 max-lg:w-full max-lg:bg-s2 max-lg:opacity-0",
-            isOpen ? "max-lg:opacity-100" : "max-lg:pointer-events-none",
+            isOpen ? "max-lg:opacity-100" : "max-lg:pointer-events-none"
           )}
         >
           <div className="w-full max-lg:relative max-lg:flex max-lg:flex-col max-lg:min-h-screen max-lg:p-6 max-lg:overflow-hidden sidebar-before max-md:px-4">
@@ -68,14 +96,38 @@ const Header = () => {
                     smooth
                     className="max-lg:hidden transition-transform duration-500 cursor-pointer"
                   >
-                    <img
-                      src="/images/xora.svg"
-                      width={160}
-                      height={55}
-                      alt="logo"
-                    />
+                    <svg
+                      width="160"
+                      height="55"
+                      viewBox="0 0 160 55"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      {/* Circle element for logo icon */}
+                      <circle cx="27" cy="27" r="20" fill="#0F3460" />
+                      <circle cx="27" cy="27" r="14" fill="#1A1A2E" />
+
+                      {/* Stylized "A" inside circle */}
+                      <path
+                        d="M20 34 L27 18 L34 34 H30 L27 27 L24 34 H20 Z"
+                        fill="#EAEDFF"
+                      />
+
+                      {/* Text "Aon AI" next to logo */}
+                      <text
+                        x="60"
+                        y="34"
+                        fontFamily="Helvetica, Arial, sans-serif"
+                        fontWeight="700"
+                        fontSize="28"
+                        fill="#EAEDFF"
+                      >
+                        Aon AI
+                      </text>
+                    </svg>
                   </LinkScroll>
                 </li>
+
                 <li className="nav-li">
                   <NavLink title="faq" />
                   <div className="dot" />

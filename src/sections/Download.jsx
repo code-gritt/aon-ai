@@ -13,17 +13,40 @@ const Download = () => {
           <div className="flex items-center">
             <div className="relative mr-6 flex-540 max-xl:flex-280 max-lg:flex256 max-md:flex-100">
               <div className="mb-10">
-                <img
-                  src="/images/xora.svg"
-                  width={160}
-                  height={55}
-                  alt="xora"
-                />
+                <svg
+                  width="160"
+                  height="55"
+                  viewBox="0 0 160 55"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  {/* Circle element for logo icon */}
+                  <circle cx="27" cy="27" r="20" fill="#0F3460" />
+                  <circle cx="27" cy="27" r="14" fill="#1A1A2E" />
+
+                  {/* Stylized "A" inside circle */}
+                  <path
+                    d="M20 34 L27 18 L34 34 H30 L27 27 L24 34 H20 Z"
+                    fill="#EAEDFF"
+                  />
+
+                  {/* Text "Aon AI" next to logo */}
+                  <text
+                    x="60"
+                    y="34"
+                    fontFamily="Helvetica, Arial, sans-serif"
+                    fontWeight="700"
+                    fontSize="28"
+                    fill="#EAEDFF"
+                  >
+                    Aon AI
+                  </text>
+                </svg>
               </div>
 
               <p className="body-1 mb-10 max-w-md">
-                Try it now for free on iOS, Android, PC, Web - whatever your
-                flavor, we've got you covered.
+                Experience Aon AI on Web, PC, or mobile—edit, enhance, and
+                transform your images effortlessly with AI-powered tools.
               </p>
 
               <ul className="flex flex-wrap items-center gap-6">
@@ -62,7 +85,7 @@ const Download = () => {
                     src="/images/screen.jpg"
                     width={855}
                     height={655}
-                    alt="screen"
+                    alt="Aon AI Screenshot"
                     className="rounded-xl"
                   />
                 </div>
