@@ -39,5 +39,6 @@ export const meQuery = async (token) => {
       }
     }
   `;
+
   return await client.request(query, {}, { Authorization: `Bearer ${token}` });
 };
