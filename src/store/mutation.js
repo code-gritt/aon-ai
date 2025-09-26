@@ -30,8 +30,8 @@ export const loginMutation = async ({ email, password }) => {
 
 export const meQuery = async (token) => {
   const query = `
-    query Me($token: String!) {
-      me(token: $token) {
+    query Me {
+      me {
         id
         email
         username
@@ -39,9 +39,5 @@ export const meQuery = async (token) => {
       }
     }
   `;
-  return await client.request(
-    query,
-    { token },
-    { Authorization: `Bearer ${token}` }
-  );
+  return await client.request(query, {}, { Authorization: `Bearer ${token}` });
 };

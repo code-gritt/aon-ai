@@ -30,11 +30,7 @@ app.add_middleware(
 
 @strawberry.type
 class Query:
-    @strawberry.field
-    async def me(self, info: Info, token: str) -> UserType:
-        """Resolver for current logged-in user"""
-        db = next(info.context["db"])
-        return await me(info, token)
+    me: UserType = strawberry.field(resolver=me)
 
 
 @strawberry.type

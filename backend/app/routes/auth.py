@@ -63,14 +63,11 @@ async def login(info: Info, input: LoginInput) -> AuthResponse:
     )
 
 
-async def me(info: Info, token: str) -> UserType:
-    """Get current user from token"""
-    db = info.context["db"]  # ✅ directly use session
+async def me(info: Info) -> UserType:
+    db = next(info.context["db"])  # Fix: Use next() to get session
+    token = info.context["request"].headers.get(
+        "Authorization", "").replace("Bearer ", "")
+    if not token:
+        raise HTTPException(status_code=401, detail="No token provided")
     user = get_current_user(token, db)
-
-    return UserType(
-        id=user.id,
-        email=user.email,
-        username=user.username,
-        credits=user.credits,
-    )
+    return UserType(id=user.id, email=user.email, username=user.username, credits=user.credits)
