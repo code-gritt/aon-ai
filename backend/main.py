@@ -104,5 +104,5 @@ async def google_callback(request: Request, db: Session = Depends(get_db)):
         )
 
     jwt_token = create_access_token({"sub": user.email})
-    frontend_url = "http://localhost:5173"
+    frontend_url = "https://aon-ai.vercel.app"
     return RedirectResponse(f"{frontend_url}/auth/callback?token={jwt_token}&email={user.email}")
