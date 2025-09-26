@@ -8,4 +8,5 @@ class User(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     username = Column(String, nullable=True)
     hashed_password = Column(String, nullable=False)
-    credits = Column(Float, default=100.0)  # Default 100 credits
+    credits = Column(Float, default=100.0)
+    google_id = Column(String, unique=True, nullable=True)

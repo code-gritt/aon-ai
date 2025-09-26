@@ -4,6 +4,7 @@ import useStore from "../store/store.js";
 import Button from "../components/Button.jsx";
 import { registerMutation } from "../store/mutation.js";
 import Loader from "../components/Loader.jsx";
+import GoogleButton from "../components/GoogleButton.jsx"; // ✅ New import
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -31,6 +32,11 @@ const Register = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // ✅ New: Google sign-up redirect
+  const handleGoogleRegister = () => {
+    window.location.href = "https://aon-ai-api.onrender.com/auth/google";
   };
 
   if (loading) return <Loader text="Creating your account..." />;
@@ -91,6 +97,12 @@ const Register = () => {
             Register
           </Button>
         </form>
+
+        {/* ✅ New Google Button Section */}
+        <div className="mt-4 text-center">
+          <p className="text-gray-400 text-sm mb-3">Or sign up with</p>
+          <GoogleButton onClick={handleGoogleRegister} />
+        </div>
 
         <p className="mt-6 text-gray-300 text-center">
           Already have an account?{" "}

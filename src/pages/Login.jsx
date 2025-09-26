@@ -4,6 +4,7 @@ import useStore from "../store/store.js";
 import Button from "../components/Button.jsx";
 import { loginMutation } from "../store/mutation.js";
 import Loader from "../components/Loader.jsx";
+import GoogleButton from "../components/GoogleButton.jsx"; // ✅ New import
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -26,6 +27,11 @@ const Login = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // ✅ New: Google login redirect
+  const handleGoogleLogin = () => {
+    window.location.href = "https://aon-ai-api.onrender.com/auth/google";
   };
 
   if (loading) return <Loader text="Logging you in..." />;
@@ -71,6 +77,12 @@ const Login = () => {
             Login
           </Button>
         </form>
+
+        {/* ✅ New Google Button Section */}
+        <div className="mt-4 text-center">
+          <p className="text-gray-400 text-sm mb-3">Or</p>
+          <GoogleButton onClick={handleGoogleLogin} />
+        </div>
 
         <p className="mt-6 text-gray-300 text-center">
           Don’t have an account?{" "}
