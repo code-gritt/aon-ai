@@ -1,4 +1,3 @@
-# app/utils/oauth_handler.py
 from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
 from sqlalchemy.orm import Session
@@ -10,7 +9,7 @@ from typing import Optional
 config = Config(".env")
 oauth = OAuth(config)
 
-# Register Google OAuth client (hardcoded)
+# Hardcoded Google OAuth client
 google = oauth.register(
     name="google",
     client_id="364386726403-0nch7vromibfcu44cj7lsvjlp2tirurs.apps.googleusercontent.com",
@@ -22,8 +21,9 @@ google = oauth.register(
 
 def get_user_from_google(token: dict, db: Session) -> User:
     """
-    Fetch an existing user by email/google_id or create a new one from Google token.
+    Fetch or create a user from Google token (synchronous DB).
     """
+    # token is a dict, not a coroutine here
     user_info = token.get("userinfo")
     if not user_info:
         raise ValueError("No user info returned from Google")
@@ -42,7 +42,7 @@ def get_user_from_google(token: dict, db: Session) -> User:
             db.commit()
         return user
 
-    # Create new user (hardcoded dummy password & default credits)
+    # Create new user
     new_user = User(
         email=email,
         username=user_info.get("name", email.split("@")[0]),

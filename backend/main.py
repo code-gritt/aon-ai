@@ -1,34 +1,31 @@
-import os
+# app/main.py
 import logging
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
-from strawberry.fastapi import GraphQLRouter
-import strawberry
-from strawberry.types import Info
+from starlette.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.routes.auth import register, login, me
-from app.schema.types import UserType, AuthResponse, RegisterInput, LoginInput
-from app.utils.auth import create_access_token
 from app.utils.oauth import google, get_user_from_google
+from app.utils.auth import create_access_token
 
 logger = logging.getLogger("uvicorn.error")
 
 app = FastAPI(title="Aon AI Backend")
 
 # ----------------------
-# Session Middleware for OAuth
+# SessionMiddleware MUST be first
 # ----------------------
 app.add_middleware(
     SessionMiddleware,
-    secret_key="supersecretkey",  # hardcoded for now
+    secret_key="supersecretkey",  # keep hardcoded for now
+    session_cookie="aon_ai_session",
+    max_age=3600
 )
 
 # ----------------------
-# CORS Configuration
+# CORS
 # ----------------------
 app.add_middleware(
     CORSMiddleware,
@@ -42,65 +39,36 @@ app.add_middleware(
 )
 
 # ----------------------
-# GraphQL Schema
-# ----------------------
-
-
-@strawberry.type
-class Query:
-    me: UserType = strawberry.field(resolver=me)
-
-
-@strawberry.type
-class Mutation:
-    @strawberry.field
-    def register(self, info: Info, input: RegisterInput) -> AuthResponse:
-        return register(info, input)
-
-    @strawberry.field
-    def login(self, info: Info, input: LoginInput) -> AuthResponse:
-        return login(info, input)
-
-
-schema = strawberry.Schema(query=Query, mutation=Mutation)
-
-
-def get_context(db=Depends(get_db)):
-    return {"db": db}
-
-
-graphql_app = GraphQLRouter(schema, context_getter=get_context)
-app.include_router(graphql_app, prefix="/graphql")
-
-# ----------------------
 # Google OAuth Routes
 # ----------------------
 
 
 @app.get("/auth/google")
-def google_oauth(request: Request):
+async def google_oauth(request: Request):
     """Initiate Google OAuth redirect"""
-    redirect_uri = "https://aon-ai-api.onrender.com/auth/google/callback"  # hardcoded
-    return google.authorize_redirect(request, redirect_uri)
+    # This stores the `state` in the session cookie
+    redirect_uri = "https://aon-ai-api.onrender.com/auth/google/callback"
+    return await google.authorize_redirect(request, redirect_uri)
 
 
 @app.get("/auth/google/callback")
-def google_callback(request: Request, db: Session = Depends(get_db)):
-    """Handle Google callback, create/login user, redirect with JWT"""
+async def google_callback(request: Request, db: Session = Depends(get_db)):
+    """Handle Google callback"""
     try:
-        token = google.authorize_access_token(request)
+        # reads state from session
+        token = await google.authorize_access_token(request)
     except Exception as e:
         logger.error(f"Google OAuth error: {e}")
         raise HTTPException(status_code=400, detail=f"OAuth error: {e}")
 
     try:
-        user = get_user_from_google(token, db)
+        user = get_user_from_google(token, db)  # synchronous DB is fine
     except Exception as e:
         logger.error(f"Error creating/fetching user: {e}")
         raise HTTPException(
-            status_code=500, detail="Failed to create or fetch user"
+            status_code=500, detail=f"Failed to create/fetch user: {e}"
         )
 
     jwt_token = create_access_token({"sub": user.email})
-    frontend_url = "http://localhost:5173"  # hardcoded frontend URL
+    frontend_url = "http://localhost:5173"
     return RedirectResponse(f"{frontend_url}/auth/callback?token={jwt_token}&email={user.email}")
