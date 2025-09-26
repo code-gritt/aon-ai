@@ -73,14 +73,14 @@ const Login = () => {
               required
             />
           </div>
-          <Button icon="/images/zap.svg" className="w-full py-3 mt-2">
-            Login
-          </Button>
         </form>
 
         {/* ✅ New Google Button Section */}
         <div className="mt-4 text-center">
-          <p className="text-gray-400 text-sm mb-3">Or</p>
+          <Button icon="/images/zap.svg" className="w-full py-3 mt-2">
+            Login
+          </Button>
+          <p className="text-gray-400 text-sm my-3">Or</p>
           <GoogleButton onClick={handleGoogleLogin} />
         </div>
 
