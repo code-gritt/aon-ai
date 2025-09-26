@@ -1,4 +1,4 @@
-from backend.app.utils.auth import create_access_token
+from app.utils.auth import create_access_token
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
