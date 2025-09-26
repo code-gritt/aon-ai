@@ -98,13 +98,13 @@ const Header = () => {
 
           {/* User Avatar */}
           {user && (
-            <div className="ml-4 flex items-center gap-2">
+            <div className="mr-4 flex items-center gap-2">
+              <span className="mr-4 text-white font-medium">
+                {user.credits} Credits
+              </span>
               <div className="w-10 h-10 rounded-full bg-blue-900 flex items-center justify-center text-white font-bold">
                 {getInitials(user.username, user.email)}
               </div>
-              <span className="text-white font-medium">
-                {user.credits} Credits
-              </span>
             </div>
           )}
         </nav>
@@ -152,12 +152,12 @@ const Header = () => {
 
         {user && (
           <div className="flex flex-col items-center gap-2 mt-6">
+            <span className="text-white font-medium text-lg mb-4">
+              {user.credits} Credits
+            </span>
             <div className="w-16 h-16 rounded-full bg-blue-900 flex items-center justify-center text-white font-bold text-xl">
               {getInitials(user.username, user.email)}
             </div>
-            <span className="text-white font-medium text-lg">
-              {user.credits} Credits
-            </span>
           </div>
         )}
       </div>
