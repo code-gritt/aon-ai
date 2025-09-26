@@ -1,3 +1,4 @@
+from backend.app.utils.auth import create_access_token
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from strawberry.fastapi import GraphQLRouter
@@ -10,8 +11,7 @@ from app.database import get_db
 from app.routes.auth import register, login, me
 from app.schema.types import UserType, AuthResponse, RegisterInput, LoginInput
 from app.utils.oauth import google, get_user_from_google  # New import
-# Make sure this exists in your utils
-from app.utils.jwt import create_access_token
+
 
 app = FastAPI(title="Aon AI Backend")
 
