@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useStore from "../store/store.js";
 import { meQuery } from "../store/mutation.js";
 import Header from "../sections/Header.jsx";
+import Loader from "../components/Loader.jsx";
 
 const Dashboard = () => {
   const { user, token, setUser } = useStore();
@@ -37,10 +38,10 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-s2">
+      <>
         <Header />
-        <p className="text-center mt-40 text-#EAEDFF">Loading...</p>
-      </div>
+        <Loader text="Loading..." />
+      </>
     );
   }
 
@@ -48,6 +49,7 @@ const Dashboard = () => {
     navigate("/login");
     return null;
   }
+
   return (
     <>
       <Header />

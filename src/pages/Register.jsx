@@ -3,17 +3,21 @@ import { useNavigate, Link } from "react-router-dom";
 import useStore from "../store/store.js";
 import Button from "../components/Button.jsx";
 import { registerMutation } from "../store/mutation.js";
+import Loader from "../components/Loader.jsx";
 
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
   const { setUser } = useStore();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
     try {
       const { register } = await registerMutation({
         email,
@@ -24,8 +28,12 @@ const Register = () => {
       navigate("/dashboard");
     } catch {
       setError("Email already registered or invalid input");
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) return <Loader text="Creating your account..." />;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 px-4">
