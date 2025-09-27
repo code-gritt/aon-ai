@@ -1,5 +1,6 @@
 import strawberry
 from typing import Optional
+from app.schema.image import ImageType, AiEditInput, Upload
 
 
 @strawberry.type
@@ -27,3 +28,9 @@ class LoginInput:
 class AuthResponse:
     token: str
     user: UserType
+
+
+@strawberry.type
+class Mutation:
+    upload_image: ImageType = strawberry.field(resolver=upload_image)
+    ai_edit: ImageType = strawberry.field(resolver=ai_edit)
