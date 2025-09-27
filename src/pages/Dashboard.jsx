@@ -14,11 +14,12 @@ const Dashboard = () => {
   const [images, setImages] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [editType, setEditType] = useState(""); // "crop", "resize", "ai-remove-bg", etc.
+  const [editType, setEditType] = useState(""); // crop, resize, AI
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
+  // Fetch user on mount
   useEffect(() => {
     const fetchUser = async () => {
       if (!token) {
@@ -28,11 +29,8 @@ const Dashboard = () => {
       }
       try {
         const response = await meQuery(token);
-        if (response.me) {
-          setUser(response.me, token);
-        } else {
-          navigate("/login");
-        }
+        if (response.me) setUser(response.me, token);
+        else navigate("/login");
       } catch (err) {
         console.error("Error fetching user:", err);
         navigate("/login");
@@ -43,12 +41,14 @@ const Dashboard = () => {
     fetchUser();
   }, [token, setUser, navigate]);
 
+  // Handle image upload
   const handleUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
     setLoading(true);
     try {
-      const { uploadImage } = await uploadImageMutation(file);
+      const { uploadImage } = await uploadImageMutation(file, token);
       setImages((prev) => [...prev, uploadImage]);
     } catch (err) {
       console.error("Upload failed:", err);
@@ -57,32 +57,38 @@ const Dashboard = () => {
     }
   };
 
+  // Handle basic canvas edits
   const handleBasicEdit = (type) => {
     if (!selectedImage) return;
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     const img = new Image();
+
     img.onload = () => {
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0);
-      // Placeholder for edit logic
-      const editedData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      ctx.putImageData(editedData, 0, 0);
+
+      // Placeholder for actual edit logic (crop, resize, brightness, etc.)
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      ctx.putImageData(imageData, 0, 0);
     };
+
     img.src = selectedImage.url;
     setEditType(type);
   };
 
+  // Handle AI edits
   const handleAiEdit = async (action, prompt = "") => {
     if (!selectedImage) return;
+
     setLoading(true);
     try {
-      const { aiEdit } = await aiEditMutation({
-        imageId: selectedImage.id,
-        action,
-        prompt,
-      });
+      const { aiEdit } = await aiEditMutation(
+        { imageId: selectedImage.id, action, prompt },
+        token
+      );
       setImages((prev) =>
         prev.map((img) => (img.id === selectedImage.id ? aiEdit : img))
       );
@@ -94,15 +100,13 @@ const Dashboard = () => {
     }
   };
 
-  if (loading) {
+  if (loading)
     return (
       <>
         <Header />
         <Loader text="Loading..." />
       </>
     );
-  }
-
   if (!user) {
     navigate("/login");
     return null;
@@ -111,10 +115,10 @@ const Dashboard = () => {
   return (
     <>
       <Header />
-      <div className="relative pt-32 pb-20 bg-gray-900 min-h-screen text-white">
-        <div className="container max-w-5xl mx-auto px-6">
-          {/* Welcome + Profile */}
-          <h1 className="text-4xl font-bold mb-4">
+      <div className="min-h-screen bg-gray-900 text-white pt-32 pb-20">
+        <div className="container mx-auto px-6 max-w-5xl">
+          {/* Welcome & Profile */}
+          <h1 className="text-4xl font-bold mb-2">
             Welcome, {user.username || user.email}
           </h1>
           <p className="text-gray-300 mb-8">
@@ -129,7 +133,7 @@ const Dashboard = () => {
             <p className="text-gray-300">Credits: {user.credits}</p>
           </div>
 
-          {/* Upload Section */}
+          {/* Upload */}
           <div className="mb-10">
             <input
               type="file"
@@ -140,7 +144,7 @@ const Dashboard = () => {
             />
             <button
               onClick={() => fileInputRef.current.click()}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl"
+              className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-xl"
             >
               Upload Image
             </button>
@@ -178,34 +182,20 @@ const Dashboard = () => {
               </h2>
               <canvas
                 ref={canvasRef}
-                className="w-96 h-auto mb-4 bg-black rounded"
+                className="w-full max-w-96 h-auto mb-4 bg-black rounded"
               />
+
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 {/* Basic Edits */}
-                <button
-                  onClick={() => handleBasicEdit("crop")}
-                  className="bg-gray-600 hover:bg-gray-700 p-2 rounded"
-                >
-                  Crop
-                </button>
-                <button
-                  onClick={() => handleBasicEdit("resize")}
-                  className="bg-gray-600 hover:bg-gray-700 p-2 rounded"
-                >
-                  Resize
-                </button>
-                <button
-                  onClick={() => handleBasicEdit("rotate")}
-                  className="bg-gray-600 hover:bg-gray-700 p-2 rounded"
-                >
-                  Rotate
-                </button>
-                <button
-                  onClick={() => handleBasicEdit("brightness")}
-                  className="bg-gray-600 hover:bg-gray-700 p-2 rounded"
-                >
-                  Brightness
-                </button>
+                {["crop", "resize", "rotate", "brightness"].map((type) => (
+                  <button
+                    key={type}
+                    onClick={() => handleBasicEdit(type)}
+                    className="bg-gray-600 hover:bg-gray-700 p-2 rounded"
+                  >
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </button>
+                ))}
 
                 {/* AI Edits */}
                 <button
