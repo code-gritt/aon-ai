@@ -1,6 +1,8 @@
 import strawberry
 from typing import Optional
-from app.schema.image import ImageType, AiEditInput, Upload
+from app.schema.image import ImageType, AiEditInput
+from strawberry.file_uploads import Upload
+from app.resolvers.image import upload_image, ai_edit
 
 
 @strawberry.type
